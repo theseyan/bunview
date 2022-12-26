@@ -23,6 +23,7 @@ pub const WebviewCommand = struct {
     view: *View,
     type: []const u8,
     data: [:0]const u8,
+    cmd: []const u8,
 
     pub fn getWebView(ctx: *BindContext) *View {
         return ctx.view;
@@ -54,9 +55,26 @@ fn bindCallback(seq: [*c]const u8, req: [*c]const u8, data: ?*anyopaque) callcon
     , .{dataPtr.id, message}) catch |e| @panic(@errorName(e));
 }
 
-fn setTitle(view: *View, data: ?*anyopaque) callconv(.C) void {
+// This callback is executed on webview thread
+// Any window-modifying code should run here
+fn runCmdWebviewThread(view: *View, data: ?*anyopaque) callconv(.C) void {
     var dataPtr = @ptrCast(*WebviewCommand, @alignCast(@alignOf(WebviewCommand), data.?));
-    view.setTitle(dataPtr.data);
+
+    if(std.mem.eql(u8, dataPtr.cmd, "setTitle")) {
+        view.setTitle(dataPtr.data);
+    }
+    else if(std.mem.eql(u8, dataPtr.cmd, "setSize")) {
+        // Split into parts
+        var parts = std.mem.split(u8, dataPtr.data, ":");
+
+        // Parse height & width
+        const width = std.fmt.parseUnsigned(u16, parts.next().?, 10) catch |e| @panic(@errorName(e));
+        const height = std.fmt.parseUnsigned(u16, parts.next().?, 10) catch |e| @panic(@errorName(e));
+        const hint = std.fmt.parseUnsigned(c_int, parts.next().?, 10) catch |e| @panic(@errorName(e));
+
+        view.setSize(width, height, @intToEnum(wv.SizeHint, hint));
+    }
+
     defer allocator.destroy(dataPtr);
 }
 
@@ -76,7 +94,7 @@ pub fn handleMessage(alloc: std.mem.Allocator, message: Message, webv: *View, st
         var ctx = try allocator.create(BindContext);
         ctx.* = BindContext{
             .view = webv,
-            .id = id
+            .id = id,
         };
 
         defer allocator.free(nameZ);
@@ -91,23 +109,23 @@ pub fn handleMessage(alloc: std.mem.Allocator, message: Message, webv: *View, st
         ctx.* = WebviewCommand{
             .view = webv,
             .type = message.type,
-            .data = message.data
+            .data = message.data,
+            .cmd = "setTitle"
         };
-        webv.dispatch(setTitle, ctx);
+        webv.dispatch(runCmdWebviewThread, ctx);
     }
 
     // setSize() function
     // Format is width:height:hint
     if(std.mem.eql(u8, message.type, "setSize") == true) {
-        // Split into parts
-        var parts = std.mem.split(u8, message.data, ":");
-
-        // Parse height & width
-        const width = try std.fmt.parseUnsigned(u16, parts.next().?, 10);
-        const height = try std.fmt.parseUnsigned(u16, parts.next().?, 10);
-        const hint = try std.fmt.parseUnsigned(c_int, parts.next().?, 10);
-
-        webv.setSize(width, height, @intToEnum(wv.SizeHint, hint));
+        var ctx = try allocator.create(WebviewCommand);
+        ctx.* = WebviewCommand{
+            .view = webv,
+            .type = message.type,
+            .data = message.data,
+            .cmd = "setSize"
+        };
+        webv.dispatch(runCmdWebviewThread, ctx);
     }
 
     // navigate() function
