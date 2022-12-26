@@ -36,7 +36,7 @@ window.on('ready', () => {
     // After 5 seconds, navigate to Bun's homepage and expand the window size
     setTimeout(() => {
         window.navigate("https://bun.sh");
-        window.setSize(800, 600, SizeHint.MIN);
+        window.setSize(800, 600, SizeHint.NONE);
     }, 5000);
 
     // After 10 seconds, exit the app

@@ -46,6 +46,7 @@ pub fn main() !void {
 
     // Set empty defaults
     view.setTitle("");
+    view.setSize(500, 500, .none);
     view.navigate("data:text/html,<html></html>");
 
     // Emit "ready" event
