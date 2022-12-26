@@ -19,6 +19,16 @@ pub const BindContext = struct {
     }
 };
 
+pub const WebviewCommand = struct {
+    view: *View,
+    type: []const u8,
+    data: [:0]const u8,
+
+    pub fn getWebView(ctx: *BindContext) *View {
+        return ctx.view;
+    }
+};
+
 // Stores allocated argument buffers
 var argBuffer: ?[:0]const u8 = null;
 
@@ -42,6 +52,12 @@ fn bindCallback(seq: [*c]const u8, req: [*c]const u8, data: ?*anyopaque) callcon
         \\  "data": {s}
         \\}}
     , .{dataPtr.id, message}) catch |e| @panic(@errorName(e));
+}
+
+fn setTitle(view: *View, data: ?*anyopaque) callconv(.C) void {
+    var dataPtr = @ptrCast(*WebviewCommand, @alignCast(@alignOf(WebviewCommand), data.?));
+    view.setTitle(dataPtr.data);
+    defer allocator.destroy(dataPtr);
 }
 
 // Handles individual messages and executes them
@@ -71,7 +87,13 @@ pub fn handleMessage(alloc: std.mem.Allocator, message: Message, webv: *View, st
 
     // setTitle() function
     if(std.mem.eql(u8, message.type, "setTitle") == true) {
-        webv.setTitle(message.data);
+        var ctx = try allocator.create(WebviewCommand);
+        ctx.* = WebviewCommand{
+            .view = webv,
+            .type = message.type,
+            .data = message.data
+        };
+        webv.dispatch(setTitle, ctx);
     }
 
     // setSize() function

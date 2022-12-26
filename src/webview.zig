@@ -44,7 +44,7 @@ pub const View = opaque {
 
     /// Posts a function to be executed on the main thread. You normally do not need
     /// to call this function, unless you want to tweak the native window.
-    pub fn dispatch(self: *Self, comptime func: fn (*Self, ?*anyopaque) callconv(.C) void, arg: ?*anyopaque) void {
+    pub fn dispatch(self: *Self, comptime func: *const fn (*Self, ?*anyopaque) callconv(.C) void, arg: ?*anyopaque) void {
         webview_dispatch(self, func, arg);
     }
 

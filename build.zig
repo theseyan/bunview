@@ -9,6 +9,9 @@ pub fn build(b: *std.build.Builder) void {
     //exe.linkLibC();
     exe.linkLibCpp();
 
+    // Strip binary
+    exe.strip = true;
+
     // Compile and link webview library
     exe.addCSourceFile("deps/webview/webview.cc", &.{
         "-c", "-std=c++11", "-fPIC"
