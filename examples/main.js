@@ -28,10 +28,10 @@ window.on('ready', () => {
     // We wait some time to let the window context initialize
     setTimeout(() => {
         window.eval("helloworld('hi!', true, 100)");
-    }, 2000);
 
-    // Inject initialization JS to be loaded before every page load
-    window.init("alert('Before page load!')");
+        // Inject initialization JS to be loaded before every page load
+        window.init("alert('Before page load!')");
+    }, 3000);
 
     // After 5 seconds, navigate to Bun's homepage and expand the window size
     setTimeout(() => {
