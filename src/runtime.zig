@@ -74,6 +74,9 @@ fn runCmdWebviewThread(view: *View, data: ?*anyopaque) callconv(.C) void {
 
         view.setSize(width, height, @intToEnum(wv.SizeHint, hint));
     }
+    else if(std.mem.eql(u8, dataPtr.cmd, "init")) {
+        view.init(dataPtr.data);
+    }
 
     defer allocator.destroy(dataPtr);
 }
@@ -140,7 +143,14 @@ pub fn handleMessage(alloc: std.mem.Allocator, message: Message, webv: *View, st
 
     // init() function
     if(std.mem.eql(u8, message.type, "init") == true) {
-        webv.init(message.data);
+       var ctx = try allocator.create(WebviewCommand);
+        ctx.* = WebviewCommand{
+            .view = webv,
+            .type = message.type,
+            .data = message.data,
+            .cmd = "init"
+        };
+        webv.dispatch(runCmdWebviewThread, ctx);
     }
 
 }
