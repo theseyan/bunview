@@ -1,0 +1,3 @@
+[submodule "deps/webview"]
+	path = deps/webview
+	url = https://github.com/webview/webview

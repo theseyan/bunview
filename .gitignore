@@ -1,0 +1,10 @@
+zig-out
+zig-cache
+.vscode
+.zigmod
+deps.zig
+.gyro
+gyro.lock
+*/zig-cache
+dev.sh
+test.js
