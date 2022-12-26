@@ -23,18 +23,22 @@ pub fn listenStdin(allocator: std.mem.Allocator, webv: *wv.View, stdout: std.fs.
     while(try stdin.readUntilDelimiterOrEofAlloc(allocator, '\n', 1024 * 1024 * 1024)) |input| {
 
         // Parse message JSON
-        const msg = x: {
-            var stream = json.TokenStream.init(input);
-            const res = json.parse(Message, &stream, .{.allocator = allocator, .ignore_unknown_fields = true});
-            break :x res catch |e| {
-                return e;
-            };
+        var parser = std.json.Parser.init(allocator, false);
+        var tree: ?std.json.ValueTree = parser.parse(input) catch |e| switch (e) {
+            error.UnexpectedEndOfJson => null,
+            else => return e
+        };
+
+        const msg = Message{
+            .type = tree.?.root.Object.get("type").?.String,
+            .data = try allocator.dupeZ(u8, tree.?.root.Object.get("data").?.String),
         };
 
         // Handle Message
         try runtime.handleMessage(allocator, msg, webv, stdout);
 
         allocator.free(input);
+        parser.deinit();
 
     }
 
