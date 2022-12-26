@@ -17,7 +17,7 @@ window.on('ready', () => {
     window.navigate("data:text/html,<html><h1>webview!</h1></html>");
 
     // Set window size
-    window.setSize(400, 400, SizeHint.MIN);
+    window.setSize(400, 400, SizeHint.NONE);
 
     // Bind function to webview's JS global namespace
     window.bind("helloworld", function() {
