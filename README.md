@@ -14,9 +14,6 @@ Feature-complete <a href="https://github.com/webview/webview">webview</a> bindin
 
 Bunview is a cross-platform library to build web-based GUIs for desktop applications.
 
-**Note:** Due to an [issue in the Zig compiler](https://github.com/ziglang/zig/issues/10478), macOS builds are not available at the moment.
-Help in making macOS builds succeed would be appreciated!
-
 ## Installation
 
 ```
@@ -40,8 +37,8 @@ There is no documentation right now, hence the best place to start is [examples]
 
 ## Limitations
 
-- Due to a [design limitation in the underlying webview library](https://github.com/webview/webview/issues/647), only one window can be active at a time
-- Once opened, a window cannot be closed without exiting the Bun process due to a bug in `webview_destroy` (tested on Linux)
+- Setting `MIN` and `MAX` window size hints on macOS does not work, you must use either `FIXED` or `NONE`
+- `Window.init` to inject Javascript preload does not work correctly on macOS
 
 # Building from source
 Bunview is written in Zig and compilation is fairly straightforward. The prerequisites are:
