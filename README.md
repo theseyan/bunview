@@ -52,6 +52,9 @@ git submodule update --init --recursive
 # Build
 zig build -Drelease-fast
 
+# Move to build/ folder. Your binary name will differ based on OS/CPU.
+mkdir build && mv zig-out/bin/bunview-x86_64-linux ./build/bunview-x86_64-linux
+
 # Run example (must have Bun installed)
 bun examples/main.js
 ```

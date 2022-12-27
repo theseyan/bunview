@@ -3,7 +3,16 @@ const std = @import("std");
 pub fn build(b: *std.build.Builder) void {
     const target = b.standardTargetOptions(.{});
     const mode = b.standardReleaseOptions();
-    const exe = b.addExecutable("bunview", "src/main.zig");
+    const os = target.getOs().tag;
+    const arch = target.getCpuArch();
+
+    var name: []const u8 = undefined;
+    if(os == .linux and arch == .x86_64) { name = "bunview-x86_64-linux"; }
+    else if(os == .linux and arch == .aarch64) { name = "bunview-aarch64-linux"; }
+    else if(os == .macos and arch == .x86_64) { name = "bunview-x86_64-macos"; }
+    else if(os == .macos and arch == .aarch64) { name = "bunview-aarch64-macos"; }
+
+    const exe = b.addExecutable(name, "src/main.zig");
 
     // Link libc and libc++
     //exe.linkLibC();

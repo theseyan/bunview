@@ -8,4 +8,3 @@ gyro.lock
 */zig-cache
 dev.sh
 test.js
-build

@@ -1,0 +1,33 @@
+{
+  "name": "bunview",
+  "version": "0.0.2",
+  "description": "Complete webview bindings for Bun",
+  "main": "lib/index.js",
+  "directories": {
+    "example": "examples",
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/theseyan/bunview.git"
+  },
+  "files": [
+    "build",
+    "lib"
+  ],
+  "keywords": [
+    "webview",
+    "bun",
+    "gui",
+    "desktop-application"
+  ],
+  "author": "Sayan J. Das",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/theseyan/bunview/issues"
+  },
+  "homepage": "https://github.com/theseyan/bunview#readme"
+}
