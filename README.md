@@ -20,6 +20,15 @@ Bunview is a cross-platform library to build web-based GUIs for desktop applicat
 bun add bunview
 ```
 
+### Linux Prerequisites
+The GTK and WebKit2GTK libraries are required for development and distribution. You need to check your package repositories regarding how to install those.
+
+On Debian-based systems:
+
+* Packages:
+    * Development: `apt install libgtk-3-dev libwebkit2gtk-4.0-dev`
+    * Production: `apt install libgtk-3-0 libwebkit2gtk-4.0-37`
+
 ## Usage
 
 ```js
